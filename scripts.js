@@ -66,3 +66,93 @@ g.call(
   .select('.domain')
   .remove();
 
+const EDUCATION_FILE =
+  'https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/for_user_education.json';
+const COUNTY_FILE =
+  'https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/counties.json';
+
+Promise.all([d3.json(COUNTY_FILE), d3.json(EDUCATION_FILE)])
+  .then(data => ready(data[0], data[1]))
+  .catch(err => console.log(err));
+
+function ready(us, education) {
+  svg
+    .append('g')
+    .attr('class', 'counties')
+    .selectAll('path')
+    .data(topojson.feature(us, us.objects.counties).features)
+    .enter()
+    .append('path')
+    .attr('class', 'county')
+    .attr('data-fips', function (d) {
+      return d.id;
+    })
+    .attr('data-education', function (d) {
+      var result = education.filter(function (obj) {
+        return obj.fips === d.id;
+      });
+      if (result[0]) {
+        return result[0].bachelorsOrHigher;
+      }
+      // could not find a matching fips id in the data
+      console.log('could find data for: ', d.id);
+      return 0;
+    })
+    .attr('fill', function (d) {
+      var result = education.filter(function (obj) {
+        return obj.fips === d.id;
+      });
+      if (result[0]) {
+        return color(result[0].bachelorsOrHigher);
+      }
+      // could not find a matching fips id in the data
+      return color(0);
+    })
+    .attr('d', path)
+    .on('mouseover', function (event, d) {
+      tooltip.style('opacity', 0.9);
+      tooltip
+        .html(function () {
+          var result = education.filter(function (obj) {
+            return obj.fips === d.id;
+          });
+          if (result[0]) {
+            return (
+              result[0]['area_name'] +
+              ', ' +
+              result[0]['state'] +
+              ': ' +
+              result[0].bachelorsOrHigher +
+              '%'
+            );
+          }
+          // could not find a matching fips id in the data
+          return 0;
+        })
+        .attr('data-education', function () {
+          var result = education.filter(function (obj) {
+            return obj.fips === d.id;
+          });
+          if (result[0]) {
+            return result[0].bachelorsOrHigher;
+          }
+          // could not find a matching fips id in the data
+          return 0;
+        })
+        .style('left', event.pageX + 10 + 'px')
+        .style('top', event.pageY - 28 + 'px');
+    })
+    .on('mouseout', function () {
+      tooltip.style('opacity', 0);
+    });
+
+  svg
+    .append('path')
+    .datum(
+      topojson.mesh(us, us.objects.states, function (a, b) {
+        return a !== b;
+      })
+    )
+    .attr('class', 'states')
+    .attr('d', path);
+}
