@@ -1,0 +1,23 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  font-family: 'Arial';
+}
+
+#main {
+  width: 1000px;
+  display: flex;
+  padding-top: 1.1rem;
+  flex-direction: column;
+  align-items: center;
+}
+
+.counties {
+  fill: none;
+}
