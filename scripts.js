@@ -1,4 +1,4 @@
-// JS TIME
+// Top declaration
 let body = d3.select('body');
 let svg = d3.select('svg');
 let tooltip = body
@@ -20,8 +20,9 @@ let g = svg
   .attr('id', 'legend')
   .attr('transform', 'translate(0,40)');
 
+// Selection
 g.selectAll('rect')
-  .data(
+.data(
     color.range().map(function (d) {
       d = color.invertExtent(d);
       if (d[0] === null) {
@@ -54,6 +55,7 @@ g.append('text')
   .attr('text-anchor', 'start')
   .attr('font-weight', 'bold');
 
+// Calling action
 g.call(
   d3
     .axisBottom(x)
@@ -66,11 +68,10 @@ g.call(
   .select('.domain')
   .remove();
 
-const EDUCATION_FILE =
-  'https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/for_user_education.json';
-const COUNTY_FILE =
-  'https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/counties.json';
+const EDUCATION_FILE = 'https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/for_user_education.json';
+const COUNTY_FILE = 'https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/counties.json';
 
+// Asynchronous operation
 Promise.all([d3.json(COUNTY_FILE), d3.json(EDUCATION_FILE)])
   .then(data => ready(data[0], data[1]))
   .catch(err => console.log(err));
@@ -149,7 +150,7 @@ function ready(us, education) {
   svg
     .append('path')
     .datum(
-      topojson.mesh(us, us.objects.states, function (a, b) {
+      topusojson.mesh(us, us.objects.states, function (a, b) {
         return a !== b;
       })
     )
